@@ -1,6 +1,7 @@
 package co.umariana.estrellas.estructura;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Lista enlazada CIRCULAR del equipo (tarea de ESTRUCTURA).
@@ -18,60 +19,166 @@ import java.util.Iterator;
  */
 public class ListaCircular<T> implements Lista<T> {
 
-    // TODO (ESTRUCTURA): declarar la clase Nodo y los atributos necesarios (cabeza, tamaño, cursor...).
+    private class Nodo {
+        private T elemento;
+        private Nodo siguiente;
+        private Nodo anterior;
+
+        private Nodo(T elemento) {
+            this.elemento = elemento;
+        }
+    }
+
+    private Nodo cabeza;
+    private Nodo cursor;
+    private int tamano;
 
     @Override
     public void agregar(T elemento) {
-        throw new UnsupportedOperationException("TODO: agregar()");
+        insertar(tamano, elemento);
     }
 
     @Override
     public void insertar(int indice, T elemento) {
-        throw new UnsupportedOperationException("TODO: insertar()");
+        if (indice < 0 || indice > tamano) {
+            throw new IndexOutOfBoundsException("Indice: " + indice + ", tamano: " + tamano);
+        }
+
+        Nodo nuevo = new Nodo(elemento);
+        if (tamano == 0) {
+            nuevo.siguiente = nuevo;
+            nuevo.anterior = nuevo;
+            cabeza = nuevo;
+            cursor = nuevo;
+        } else {
+            Nodo siguiente = indice == tamano ? cabeza : nodoEn(indice);
+            Nodo anterior = siguiente.anterior;
+            nuevo.anterior = anterior;
+            nuevo.siguiente = siguiente;
+            anterior.siguiente = nuevo;
+            siguiente.anterior = nuevo;
+            if (indice == 0) {
+                cabeza = nuevo;
+            }
+        }
+        tamano++;
     }
 
     @Override
     public T obtener(int indice) {
-        throw new UnsupportedOperationException("TODO: obtener()");
+        validarIndice(indice);
+        return nodoEn(indice).elemento;
     }
 
     @Override
     public T eliminar(int indice) {
-        throw new UnsupportedOperationException("TODO: eliminar()");
+        validarIndice(indice);
+        Nodo eliminado = nodoEn(indice);
+        T elemento = eliminado.elemento;
+
+        if (tamano == 1) {
+            cabeza = null;
+            cursor = null;
+        } else {
+            eliminado.anterior.siguiente = eliminado.siguiente;
+            eliminado.siguiente.anterior = eliminado.anterior;
+            if (eliminado == cabeza) {
+                cabeza = eliminado.siguiente;
+            }
+            if (eliminado == cursor) {
+                cursor = eliminado.siguiente;
+            }
+        }
+
+        tamano--;
+        eliminado.siguiente = null;
+        eliminado.anterior = null;
+        return elemento;
     }
 
     @Override
     public int tamano() {
-        throw new UnsupportedOperationException("TODO: tamano()");
+        return tamano;
     }
 
     @Override
     public boolean estaVacia() {
-        throw new UnsupportedOperationException("TODO: estaVacia()");
+        return tamano == 0;
     }
 
     @Override
     public void vaciar() {
-        throw new UnsupportedOperationException("TODO: vaciar()");
+        cabeza = null;
+        cursor = null;
+        tamano = 0;
     }
 
     @Override
     public T actual() {
-        throw new UnsupportedOperationException("TODO: actual()");
+        return cursor == null ? null : cursor.elemento;
     }
 
     @Override
     public boolean avanzar() {
-        throw new UnsupportedOperationException("TODO: avanzar()");
+        if (estaVacia()) {
+            return false;
+        }
+        cursor = cursor.siguiente;
+        return true;
     }
 
     @Override
     public boolean retroceder() {
-        throw new UnsupportedOperationException("TODO: retroceder()");
+        if (estaVacia()) {
+            return false;
+        }
+        cursor = cursor.anterior;
+        return true;
     }
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("TODO: iterator()");
+        return new Iterator<>() {
+            private Nodo siguiente = cabeza;
+            private int restantes = tamano;
+
+            @Override
+            public boolean hasNext() {
+                return restantes > 0;
+            }
+
+            @Override
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                T elemento = siguiente.elemento;
+                siguiente = siguiente.siguiente;
+                restantes--;
+                return elemento;
+            }
+        };
+    }
+
+    private Nodo nodoEn(int indice) {
+        Nodo nodo;
+        if (indice < tamano / 2) {
+            nodo = cabeza;
+            for (int i = 0; i < indice; i++) {
+                nodo = nodo.siguiente;
+            }
+        } else {
+            nodo = cabeza.anterior;
+            for (int i = tamano - 1; i > indice; i--) {
+                nodo = nodo.anterior;
+            }
+        }
+        return nodo;
+    }
+
+    private void validarIndice(int indice) {
+        if (indice < 0 || indice >= tamano) {
+            throw new IndexOutOfBoundsException("Indice: " + indice + ", tamano: " + tamano);
+        }
     }
 }
