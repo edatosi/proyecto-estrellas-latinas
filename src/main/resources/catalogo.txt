@@ -1,0 +1,5 @@
+# Catálogo de canciones que ya vienen en el proyecto (carpeta src/main/webapp/media).
+# Formato: codigo;titulo;categoria;brillo;duracionSeg;descripcion;archivo;autor
+S001;Recall;Electrónica;7;125.3;Un sencillo con un brillo que se nota desde lejos;gabriawll.mp3;Gabriawll
+S002;whatdoyousee;Electrónica;5;118.6;Un sencillo de brillo tranquilo, para la madrugada;whatdoyousee.mp3;prodBigMike! y GlitchCat
+S003;Magnetic;Electrónica;9;123.5;El sencillo más brillante de la radio;springs.mp3;springs!
