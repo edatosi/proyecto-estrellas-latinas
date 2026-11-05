@@ -3,7 +3,11 @@ package co.umariana.estrellas.persistencia;
 import co.umariana.estrellas.modelo.Sencillo;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,13 +36,53 @@ public class RepositorioTxt implements Repositorio {
 
     @Override
     public List<Sencillo> cargar() throws IOException {
-        // TODO (PERSISTENCIA)
-        throw new UnsupportedOperationException("TODO: cargar()");
+        List<Sencillo> sencillos = new ArrayList<>();
+        if (!Files.exists(archivo)) {
+            return sencillos;
+        }
+
+        for (String linea : Files.readAllLines(archivo, StandardCharsets.UTF_8)) {
+            if (linea.isBlank()) {
+                continue;
+            }
+
+            String[] campos = linea.split(";", -1);
+            if (campos.length != 7) {
+                continue;
+            }
+
+            try {
+                int brillo = Integer.parseInt(campos[3]);
+                double duracionSeg = Double.parseDouble(campos[4]);
+                sencillos.add(new Sencillo(
+                        campos[0], campos[1], campos[2], brillo, duracionSeg, campos[5], campos[6]));
+            } catch (NumberFormatException ignorada) {
+                // Una línea dañada no debe impedir cargar las demás.
+            }
+        }
+        return sencillos;
     }
 
     @Override
     public void guardar(List<Sencillo> sencillos) throws IOException {
-        // TODO (PERSISTENCIA)
-        throw new UnsupportedOperationException("TODO: guardar()");
+        Path carpeta = archivo.getParent();
+        if (carpeta != null) {
+            Files.createDirectories(carpeta);
+        }
+
+        List<String> lineas = sencillos.stream()
+                .map(sencillo -> String.join(";",
+                        sencillo.getCodigo(),
+                        sencillo.getTitulo(),
+                        sencillo.getCategoria(),
+                        Integer.toString(sencillo.getBrillo()),
+                        Double.toString(sencillo.getDuracionSeg()),
+                        sencillo.getDescripcion(),
+                        sencillo.getArchivo()))
+                .toList();
+
+        Files.write(archivo, lineas, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE);
     }
 }
