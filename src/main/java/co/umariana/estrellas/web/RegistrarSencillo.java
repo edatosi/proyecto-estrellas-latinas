@@ -1,5 +1,7 @@
 package co.umariana.estrellas.web;
 
+import co.umariana.estrellas.modelo.Sencillo;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,13 +29,30 @@ public class RegistrarSencillo extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: RegistrarSencillo.doGet()");
+        req.getRequestDispatcher("/WEB-INF/vistas/formulario.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: RegistrarSencillo.doPost()");
+        try {
+            String codigo = req.getParameter("codigo");
+            String titulo = req.getParameter("titulo");
+            String categoria = req.getParameter("categoria");
+            int brillo = Integer.parseInt(req.getParameter("brillo"));
+            double duracion = Double.parseDouble(req.getParameter("duracion"));
+            String descripcion = req.getParameter("descripcion");
+            String archivo = req.getParameter("archivo");
+
+            Sencillo sencillo = new Sencillo(codigo, titulo, categoria, brillo, duracion, descripcion, archivo);
+            Contexto.servicio().agregar(sencillo);
+            resp.sendRedirect("listar");
+        } catch (RuntimeException e) {
+            if (e instanceof IllegalArgumentException || e instanceof NumberFormatException) {
+                req.setAttribute("error", e.getMessage());
+                req.getRequestDispatcher("/WEB-INF/vistas/formulario.jsp").forward(req, resp);
+                return;
+            }
+            throw e;
+        }
     }
 }
