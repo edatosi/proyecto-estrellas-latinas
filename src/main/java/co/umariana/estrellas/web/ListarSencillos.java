@@ -24,7 +24,12 @@ public class ListarSencillos extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: ListarSencillos.doGet()");
+        if ("ranking".equals(req.getParameter("orden"))) {
+            req.setAttribute("sencillos", Contexto.servicio().ranking());
+        } else {
+            req.setAttribute("sencillos", Contexto.servicio().listar());
+        }
+        req.setAttribute("promedios", Contexto.servicio().promedioPorCategoria());
+        req.getRequestDispatcher("/WEB-INF/vistas/listar.jsp").forward(req, resp);
     }
 }

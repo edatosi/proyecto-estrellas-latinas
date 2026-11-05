@@ -25,7 +25,19 @@ public class Radio extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: Radio.doGet()");
+        String accion = req.getParameter("accion");
+        co.umariana.estrellas.modelo.Sencillo sencillo;
+
+        if ("siguiente".equals(accion)) {
+            sencillo = Contexto.servicio().siguiente();
+        } else if ("anterior".equals(accion)) {
+            sencillo = Contexto.servicio().anterior();
+        } else {
+            sencillo = Contexto.servicio().actual();
+        }
+
+        req.setAttribute("sencillo", sencillo);
+        req.setAttribute("total", Contexto.servicio().total());
+        req.getRequestDispatcher("/WEB-INF/vistas/radio.jsp").forward(req, resp);
     }
 }

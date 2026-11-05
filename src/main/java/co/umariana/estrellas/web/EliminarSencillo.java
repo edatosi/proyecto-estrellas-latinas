@@ -18,7 +18,8 @@ public class EliminarSencillo extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // TODO (SERVLETS)
-        throw new UnsupportedOperationException("TODO: EliminarSencillo.doPost()");
+        String codigo = req.getParameter("codigo");
+        Contexto.servicio().eliminar(codigo);
+        resp.sendRedirect("listar");
     }
 }
