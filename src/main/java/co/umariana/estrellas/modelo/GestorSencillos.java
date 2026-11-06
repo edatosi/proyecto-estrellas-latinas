@@ -3,8 +3,13 @@ package co.umariana.estrellas.modelo;
 import co.umariana.estrellas.estructura.Lista;
 import co.umariana.estrellas.persistencia.Repositorio;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Reglas de negocio del Estrellario (tarea de MODELO).
@@ -25,67 +30,114 @@ public class GestorSencillos implements ServicioSencillos {
     public GestorSencillos(Lista<Sencillo> lista, Repositorio repositorio) {
         this.lista = lista;
         this.repositorio = repositorio;
-        // TODO (MODELO): cargar los sencillos del repositorio y agregarlos a la lista.
+        try {
+            for (Sencillo sencillo : repositorio.cargar()) {
+                lista.agregar(sencillo);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
     public void agregar(Sencillo sencillo) {
-        // TODO (MODELO): validar (sencillo.validar()), rechazar código repetido
-        //  (IllegalArgumentException), agregar al final de la lista y guardar con el repositorio.
-        throw new UnsupportedOperationException("TODO: agregar()");
+        sencillo.validar();
+        if (buscar(sencillo.getCodigo()) != null) {
+            throw new IllegalArgumentException("Ya existe un sencillo con el código " + sencillo.getCodigo() + ".");
+        }
+        lista.agregar(sencillo);
+        guardar();
     }
 
     @Override
     public Sencillo buscar(String codigo) {
-        // TODO (MODELO)
-        throw new UnsupportedOperationException("TODO: buscar()");
+        if (codigo == null) {
+            return null;
+        }
+        for (Sencillo sencillo : lista) {
+            if (codigo.equals(sencillo.getCodigo())) {
+                return sencillo;
+            }
+        }
+        return null;
     }
 
     @Override
     public boolean eliminar(String codigo) {
-        // TODO (MODELO): si existe, eliminarlo de la lista, guardar y devolver true.
-        throw new UnsupportedOperationException("TODO: eliminar()");
+        int indice = 0;
+        for (Sencillo sencillo : lista) {
+            if (codigo != null && codigo.equals(sencillo.getCodigo())) {
+                lista.eliminar(indice);
+                guardar();
+                return true;
+            }
+            indice++;
+        }
+        return false;
     }
 
     @Override
     public List<Sencillo> listar() {
-        // TODO (MODELO): devolver los sencillos en el orden de la lista.
-        throw new UnsupportedOperationException("TODO: listar()");
+        List<Sencillo> sencillos = new ArrayList<>(lista.tamano());
+        for (Sencillo sencillo : lista) {
+            sencillos.add(sencillo);
+        }
+        return sencillos;
     }
 
     @Override
     public List<Sencillo> ranking() {
-        // TODO (MODELO)
-        throw new UnsupportedOperationException("TODO: ranking()");
+        List<Sencillo> ranking = listar();
+        ranking.sort(Comparator.comparingInt(Sencillo::getBrillo)
+                .reversed()
+                .thenComparing(Sencillo::getCodigo));
+        return ranking;
     }
 
     @Override
     public Map<String, Double> promedioPorCategoria() {
-        // TODO (MODELO)
-        throw new UnsupportedOperationException("TODO: promedioPorCategoria()");
+        Map<String, double[]> acumulados = new TreeMap<>();
+        for (Sencillo sencillo : lista) {
+            double[] acumulado = acumulados.computeIfAbsent(sencillo.getCategoria(), categoria -> new double[2]);
+            acumulado[0] += sencillo.getBrillo();
+            acumulado[1]++;
+        }
+
+        Map<String, Double> promedios = new TreeMap<>();
+        for (Map.Entry<String, double[]> entrada : acumulados.entrySet()) {
+            double[] acumulado = entrada.getValue();
+            promedios.put(entrada.getKey(), acumulado[0] / acumulado[1]);
+        }
+        return promedios;
     }
 
     @Override
     public int total() {
-        // TODO (MODELO)
-        throw new UnsupportedOperationException("TODO: total()");
+        return lista.tamano();
     }
 
     @Override
     public Sencillo actual() {
-        // TODO (MODELO): usar el cursor de la lista.
-        throw new UnsupportedOperationException("TODO: actual()");
+        return lista.actual();
     }
 
     @Override
     public Sencillo siguiente() {
-        // TODO (MODELO)
-        throw new UnsupportedOperationException("TODO: siguiente()");
+        lista.avanzar();
+        return lista.actual();
     }
 
     @Override
     public Sencillo anterior() {
-        // TODO (MODELO)
-        throw new UnsupportedOperationException("TODO: anterior()");
+        lista.retroceder();
+        return lista.actual();
+    }
+
+    private void guardar() {
+        try {
+            repositorio.guardar(listar());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

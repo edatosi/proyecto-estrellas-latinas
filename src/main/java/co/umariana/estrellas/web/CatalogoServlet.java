@@ -13,8 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Página del catálogo: muestra los audios que vienen en el proyecto y permite agregarlos al
- * Estrellario con un botón. Ya está hecha: es la forma de tener datos para probar la aplicación.
- * NO se modifica.
+ * Estrellario con un botón. Es la forma de tener datos para probar la aplicación.
  */
 @WebServlet("/catalogo")
 public class CatalogoServlet extends HttpServlet {
@@ -24,37 +23,65 @@ public class CatalogoServlet extends HttpServlet {
         resp.setContentType("text/html;charset=UTF-8");
         String ok = req.getParameter("ok");
         String error = req.getParameter("error");
+        String contextPath = req.getContextPath();
         PrintWriter out = resp.getWriter();
         out.println("<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\">");
         out.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
-        out.println("<title>Catálogo de sencillos</title></head><body>");
-        out.println("<header><h1>🌟 Estrellario</h1><p>Catálogo de audios</p></header>");
-        out.println("<nav><a href=\"index.html\">Inicio</a></nav><main>");
-        out.println("<h2>Audios disponibles</h2>");
-        out.println("<p>Pulse <strong>Agregar</strong> para guardar un audio en el Estrellario (usa su <code>GestorSencillos</code>).</p>");
+        out.println("<meta name=\"theme-color\" content=\"#080b19\">");
+        out.println("<meta name=\"description\" content=\"Explora los audios disponibles y agrégalos a tu colección Estrellario.\">");
+        out.println("<title>Catálogo | Estrellario</title>");
+        out.println("<link rel=\"stylesheet\" href=\"" + Html.esc(contextPath) + "/css/estrellario.css\">");
+        out.println("</head><body>");
+        out.println("<header class=\"site-header\">");
+        out.println("<a class=\"brand\" href=\"" + Html.esc(contextPath) + "/\"><span aria-hidden=\"true\">✦</span>Estrellario</a>");
+        out.println("<nav class=\"site-nav\" aria-label=\"Navegación principal\">");
+        out.println("<a href=\"" + Html.esc(contextPath) + "/catalogo\" aria-current=\"page\">Catálogo</a>");
+        out.println("<a href=\"" + Html.esc(contextPath) + "/listar\">Sencillos</a>");
+        out.println("<a href=\"" + Html.esc(contextPath) + "/radio\">Radio</a>");
+        out.println("</nav></header>");
+        out.println("<main class=\"page catalog-page\">");
+        out.println("<section class=\"catalog-intro\">");
+        out.println("<p class=\"eyebrow\">Descubre nuevos sonidos</p>");
+        out.println("<h1>Catálogo de audios</h1>");
+        out.println("<p class=\"lead\">Escucha cada sencillo y agrégalo a tu colección para que también suene en la radio.</p>");
+        out.println("</section>");
         if (ok != null) {
-            out.println("<p>✔ Se agregó " + Html.esc(ok) + ".</p>");
+            out.println("<p class=\"notice\" role=\"status\">✦ Se agregó " + Html.esc(ok) + " a tu colección.</p>");
         }
         if (error != null) {
-            out.println("<p>✖ " + Html.esc(error) + "</p>");
+            out.println("<p class=\"error\" role=\"alert\">" + Html.esc(error) + "</p>");
         }
+        out.println("<section class=\"catalog-grid\" aria-label=\"Audios disponibles\">");
         for (Catalogo.Entrada e : Catalogo.entradas()) {
             Sencillo l = e.sencillo();
             boolean agregado = yaAgregado(l.getCodigo());
-            out.println("<article>");
-            out.println("<h3>" + Html.esc(l.getTitulo()) + " <small>" + Html.esc(l.getCodigo()) + "</small></h3>");
-            out.println("<p><span>" + Html.esc(l.getCategoria()) + "</span>"
-                    + "<span>Brillo " + l.getBrillo() + "/10</span>"
-                    + "<span>" + l.getDuracionSeg() + " s</span></p>");
-            out.println("<p>" + Html.esc(l.getDescripcion()) + "</p>");
-            out.println("<p>Autor: " + Html.esc(e.autor()) + "</p>");
-            out.println("<audio controls preload=\"none\" src=\"media/" + Html.esc(l.getArchivo()) + "\"></audio>");
-            out.println("<form method=\"post\" action=\"catalogo\"><input type=\"hidden\" name=\"codigo\" value=\""
+            out.println("<article class=\"catalog-card\">");
+            out.println("<div class=\"catalog-card-heading\">");
+            out.println("<span class=\"catalog-card-icon\" aria-hidden=\"true\">♫</span>");
+            out.println("<span class=\"catalog-code\">" + Html.esc(l.getCodigo()) + "</span></div>");
+            out.println("<h2>" + Html.esc(l.getTitulo()) + "</h2>");
+            out.println("<div class=\"track-meta catalog-meta\">");
+            out.println("<span>" + Html.esc(l.getCategoria()) + "</span>");
+            out.println("<span>Brillo " + l.getBrillo() + "/10</span>");
+            out.println("<span>" + l.getDuracionSeg() + " s</span>");
+            out.println("</div>");
+            out.println("<p class=\"catalog-description\">" + Html.esc(l.getDescripcion()) + "</p>");
+            out.println("<p class=\"catalog-author\">Por <strong>" + Html.esc(e.autor()) + "</strong></p>");
+            out.println("<audio controls preload=\"none\" aria-label=\"Escuchar " + Html.esc(l.getTitulo()) + "\">");
+            out.println("<source src=\"" + Html.esc(contextPath) + "/media/" + Html.esc(l.getArchivo())
+                    + "\" type=\"audio/mpeg\">Tu navegador no puede reproducir este audio.</audio>");
+            out.println("<form method=\"post\" action=\"" + Html.esc(contextPath) + "/catalogo\">"
+                    + "<input type=\"hidden\" name=\"codigo\" value=\""
                     + Html.esc(l.getCodigo()) + "\">"
-                    + (agregado ? "<button disabled>Ya agregado</button>" : "<button>Agregar</button>") + "</form>");
+                    + (agregado
+                    ? "<button class=\"button-primary\" type=\"submit\" disabled>✓ Ya está en tu colección</button>"
+                    : "<button class=\"button-primary\" type=\"submit\">＋ Agregar a mi colección</button>")
+                    + "</form>");
             out.println("</article>");
         }
-        out.println("</main><footer>Proyecto final · Estructuras de Datos I</footer></body></html>");
+        out.println("</section></main>");
+        out.println("<footer class=\"site-footer\">Estrellario <span aria-hidden=\"true\">✦</span> La radio de las estrellas latinas</footer>");
+        out.println("</body></html>");
     }
 
     @Override

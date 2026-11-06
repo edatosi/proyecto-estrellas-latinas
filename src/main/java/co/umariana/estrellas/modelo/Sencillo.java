@@ -40,8 +40,37 @@ public class Sencillo {
      * </ul>
      */
     public void validar() {
-        // TODO (MODELO): implementar las reglas descritas arriba.
-        throw new UnsupportedOperationException("TODO: validar()");
+        validarTextoObligatorio(codigo, "El código");
+        validarTextoObligatorio(titulo, "El título");
+        validarTextoObligatorio(categoria, "La categoría");
+        validarTextoObligatorio(archivo, "El archivo");
+        validarTexto(descripcion, "La descripción");
+
+        if (brillo < 1 || brillo > 10) {
+            throw new IllegalArgumentException("El brillo debe estar entre 1 y 10.");
+        }
+        if (!Double.isFinite(duracionSeg) || duracionSeg <= 0) {
+            throw new IllegalArgumentException("La duración debe ser mayor que 0.");
+        }
+    }
+
+    private static void validarTextoObligatorio(String texto, String nombre) {
+        if (texto == null || texto.isBlank()) {
+            throw new IllegalArgumentException(nombre + " no puede estar vacío.");
+        }
+        validarTexto(texto, nombre);
+    }
+
+    private static void validarTexto(String texto, String nombre) {
+        if (texto == null) {
+            throw new IllegalArgumentException(nombre + " no puede ser nula.");
+        }
+        if (texto.indexOf(';') >= 0) {
+            throw new IllegalArgumentException(nombre + " no puede contener el carácter ';'.");
+        }
+        if (texto.indexOf('\n') >= 0 || texto.indexOf('\r') >= 0) {
+            throw new IllegalArgumentException(nombre + " no puede contener saltos de línea.");
+        }
     }
 
     public String getCodigo() { return codigo; }
