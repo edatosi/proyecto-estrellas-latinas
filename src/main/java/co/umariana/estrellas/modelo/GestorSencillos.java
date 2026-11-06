@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -51,13 +52,9 @@ public class GestorSencillos implements ServicioSencillos {
 
     @Override
     public Sencillo buscar(String codigo) {
-        if (codigo == null) {
-            return null;
-        }
+        if (codigo == null) return null;
         for (Sencillo sencillo : lista) {
-            if (codigo.equals(sencillo.getCodigo())) {
-                return sencillo;
-            }
+            if (codigo.equals(sencillo.getCodigo())) return sencillo;
         }
         return null;
     }
