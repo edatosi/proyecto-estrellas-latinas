@@ -42,12 +42,9 @@ public class GestorSencillos implements ServicioSencillos {
 
     @Override
     public void agregar(Sencillo sencillo) {
-        if (sencillo == null) {
-            throw new IllegalArgumentException("El sencillo no puede ser nulo.");
-        }
         sencillo.validar();
         if (buscar(sencillo.getCodigo()) != null) {
-            throw new IllegalArgumentException("Ya existe un sencillo con ese código.");
+            throw new IllegalArgumentException("Ya existe un sencillo con el código " + sencillo.getCodigo() + ".");
         }
         lista.agregar(sencillo);
         guardar();
@@ -64,45 +61,51 @@ public class GestorSencillos implements ServicioSencillos {
 
     @Override
     public boolean eliminar(String codigo) {
-       if (codigo == null) return false;
-        for (int i = 0; i < lista.tamano(); i++) {
-            if (codigo.equals(lista.obtener(i).getCodigo())) {
-                lista.eliminar(i);
+        int indice = 0;
+        for (Sencillo sencillo : lista) {
+            if (codigo != null && codigo.equals(sencillo.getCodigo())) {
+                lista.eliminar(indice);
                 guardar();
                 return true;
             }
+            indice++;
         }
         return false;
     }
 
     @Override
     public List<Sencillo> listar() {
-       List<Sencillo> resultado = new ArrayList<>();
-        for (Sencillo sencillo : lista) resultado.add(sencillo);
-        return resultado;
+        List<Sencillo> sencillos = new ArrayList<>(lista.tamano());
+        for (Sencillo sencillo : lista) {
+            sencillos.add(sencillo);
+        }
+        return sencillos;
     }
 
     @Override
     public List<Sencillo> ranking() {
-       List<Sencillo> resultado = listar();
-        resultado.sort(Comparator.comparingInt(Sencillo::getBrillo).reversed()
+        List<Sencillo> ranking = listar();
+        ranking.sort(Comparator.comparingInt(Sencillo::getBrillo)
+                .reversed()
                 .thenComparing(Sencillo::getCodigo));
-        return resultado;
+        return ranking;
     }
 
     @Override
     public Map<String, Double> promedioPorCategoria() {
-        Map<String, int[]> acumulados = new TreeMap<>();
+        Map<String, double[]> acumulados = new TreeMap<>();
         for (Sencillo sencillo : lista) {
-            int[] valores = acumulados.computeIfAbsent(sencillo.getCategoria(), k -> new int[2]);
-            valores[0] += sencillo.getBrillo();
-            valores[1]++;
+            double[] acumulado = acumulados.computeIfAbsent(sencillo.getCategoria(), categoria -> new double[2]);
+            acumulado[0] += sencillo.getBrillo();
+            acumulado[1]++;
         }
-        Map<String, Double> promedios = new LinkedHashMap<>();
-        acumulados.forEach((categoria, valores) ->
-                promedios.put(categoria, (double) valores[0] / valores[1]));
+
+        Map<String, Double> promedios = new TreeMap<>();
+        for (Map.Entry<String, double[]> entrada : acumulados.entrySet()) {
+            double[] acumulado = entrada.getValue();
+            promedios.put(entrada.getKey(), acumulado[0] / acumulado[1]);
+        }
         return promedios;
-       
     }
 
     @Override
@@ -112,19 +115,17 @@ public class GestorSencillos implements ServicioSencillos {
 
     @Override
     public Sencillo actual() {
-       return lista.actual();
+        return lista.actual();
     }
 
     @Override
     public Sencillo siguiente() {
-       if (lista.estaVacia()) return null;
         lista.avanzar();
         return lista.actual();
     }
 
     @Override
     public Sencillo anterior() {
-       if (lista.estaVacia()) return null;
         lista.retroceder();
         return lista.actual();
     }
@@ -135,6 +136,5 @@ public class GestorSencillos implements ServicioSencillos {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    
     }
 }

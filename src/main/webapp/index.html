@@ -3,22 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Estrellario</title>
+    <meta name="theme-color" content="#080b19">
+    <meta name="description" content="Descubre, organiza y escucha las estrellas de la música latina en Estrellario.">
+    <title>Estrellario | La radio de las estrellas latinas</title>
+    <link rel="stylesheet" href="css/estrellario.css">
 </head>
 <body>
-<header>
-    <h1>🌟 Estrellario</h1>
-    <p>La radio que nunca se apaga: las estrellas latinas, una tras otra</p>
+<header class="site-header">
+    <a class="brand" href="./"><span aria-hidden="true">✦</span>Estrellario</a>
+    <nav class="site-nav" aria-label="Navegación principal">
+        <a href="catalogo">Catálogo</a>
+        <a href="listar">Sencillos</a>
+        <a href="radio">Radio</a>
+    </nav>
 </header>
-<main>
-    <ul>
-        <li><a href="catalogo">📦 Catálogo de audios<br><small>Agregar audios (ya funciona)</small></a></li>
-        <li><a href="listar">📋 Sencillos<br><small>Lista, ranking y promedios</small></a></li>
-        <li><a href="registrar">➕ Registrar<br><small>Agregar un sencillo a mano</small></a></li>
-        <li><a href="radio">▶️ Radio<br><small>Anterior / Siguiente</small></a></li>
-    </ul>
-    <p>Las páginas <em>Sencillos</em>, <em>Registrar</em> y <em>Radio</em> las construye el equipo.</p>
+
+<main class="page home-page">
+    <section class="home-hero panel">
+        <div class="home-hero-copy">
+            <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> Música que siempre vuelve a empezar</p>
+            <h1>Las estrellas latinas, <span>en un solo lugar.</span></h1>
+            <p class="lead">Descubre nuevos sonidos, arma tu colección y sintoniza una radio que nunca se queda en silencio.</p>
+            <div class="home-actions">
+                <a class="button button-primary" href="catalogo">Explorar catálogo <span aria-hidden="true">→</span></a>
+                <a class="button" href="radio"><span aria-hidden="true">▶</span> Ir a la radio</a>
+            </div>
+            <p class="home-caption"><span aria-hidden="true">✦</span> Tu próxima canción favorita está más cerca.</p>
+        </div>
+        <div class="home-art" aria-hidden="true">
+            <div class="home-orbit"></div>
+            <div class="home-disc"><span>✦</span><strong>ESTRELLARIO</strong><small>LATIN SOUNDS</small></div>
+            <span class="home-star">✧</span>
+            <span class="home-note">♫</span>
+        </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="explore-heading">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Todo empieza aquí</p>
+                <h2 id="explore-heading">Explora el Estrellario</h2>
+            </div>
+            <p>Tu música, tu colección, tu frecuencia.</p>
+        </div>
+        <div class="home-cards">
+            <a class="home-card card-catalog" href="catalogo">
+                <span class="card-icon" aria-hidden="true">♫</span>
+                <span class="card-label">DESCUBRE</span>
+                <strong>Catálogo de audios</strong>
+                <span class="card-description">Encuentra canciones listas para agregar a tu colección.</span>
+                <span class="card-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="home-card card-library" href="listar">
+                <span class="card-icon" aria-hidden="true">▤</span>
+                <span class="card-label">ORGANIZA</span>
+                <strong>Mis sencillos</strong>
+                <span class="card-description">Revisa tu lista, el ranking y el brillo por categoría.</span>
+                <span class="card-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="home-card card-add" href="registrar">
+                <span class="card-icon" aria-hidden="true">＋</span>
+                <span class="card-label">COMPARTE</span>
+                <strong>Agregar un sencillo</strong>
+                <span class="card-description">Dale un lugar en la colección a una nueva estrella.</span>
+                <span class="card-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="home-card card-radio" href="radio">
+                <span class="card-icon" aria-hidden="true">▶</span>
+                <span class="card-label">SINTONIZA</span>
+                <strong>La radio</strong>
+                <span class="card-description">Escucha tus sencillos uno tras otro, sin final.</span>
+                <span class="card-arrow" aria-hidden="true">↗</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="home-banner">
+        <span class="banner-star" aria-hidden="true">✦</span>
+        <div>
+            <p class="eyebrow">El ritmo no se detiene</p>
+            <h2>Una canción lleva a otra.</h2>
+            <p>Agrega tus favoritos y deja que la radio haga el resto.</p>
+        </div>
+        <a class="button" href="registrar">Crear mi colección <span aria-hidden="true">→</span></a>
+    </section>
 </main>
-<footer>Proyecto final · Estructuras de Datos I</footer>
+
+<footer class="site-footer">Estrellario <span aria-hidden="true">✦</span> Proyecto final · Estructuras de Datos I</footer>
 </body>
 </html>

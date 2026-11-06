@@ -40,33 +40,36 @@ public class Sencillo {
      * </ul>
      */
     public void validar() {
-       validarTextoObligatorio(codigo, "código");
-        validarTextoObligatorio(titulo, "título");
-        validarTextoObligatorio(categoria, "categoría");
-        validarTextoObligatorio(archivo, "archivo");
-        validarTexto(descripcion, "descripción");
+        validarTextoObligatorio(codigo, "El código");
+        validarTextoObligatorio(titulo, "El título");
+        validarTextoObligatorio(categoria, "La categoría");
+        validarTextoObligatorio(archivo, "El archivo");
+        validarTexto(descripcion, "La descripción");
 
         if (brillo < 1 || brillo > 10) {
             throw new IllegalArgumentException("El brillo debe estar entre 1 y 10.");
         }
-        if (!(duracionSeg > 0)) {
+        if (!Double.isFinite(duracionSeg) || duracionSeg <= 0) {
             throw new IllegalArgumentException("La duración debe ser mayor que 0.");
         }
     }
 
     private static void validarTextoObligatorio(String texto, String nombre) {
-        validarTexto(texto, nombre);
-        if (texto.isBlank()) {
-            throw new IllegalArgumentException("El " + nombre + " no puede estar en blanco.");
+        if (texto == null || texto.isBlank()) {
+            throw new IllegalArgumentException(nombre + " no puede estar vacío.");
         }
+        validarTexto(texto, nombre);
     }
 
     private static void validarTexto(String texto, String nombre) {
         if (texto == null) {
-            throw new IllegalArgumentException("La " + nombre + " no puede ser nula.");
+            throw new IllegalArgumentException(nombre + " no puede ser nula.");
         }
-        if (texto.indexOf(';') >= 0 || texto.indexOf('\n') >= 0 || texto.indexOf('\r') >= 0) {
-            throw new IllegalArgumentException("La " + nombre + " no puede contener ';' ni saltos de línea.");
+        if (texto.indexOf(';') >= 0) {
+            throw new IllegalArgumentException(nombre + " no puede contener el carácter ';'.");
+        }
+        if (texto.indexOf('\n') >= 0 || texto.indexOf('\r') >= 0) {
+            throw new IllegalArgumentException(nombre + " no puede contener saltos de línea.");
         }
     }
 
